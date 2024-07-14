@@ -32,3 +32,62 @@
 | 전체 예약 내역 조회(모든 사용자) | /manager/list |  | GET |  | manager/list |  |
 | 부분 예약 내역 조회(사용자 이름 검색) | /manager/list |  | GET |  | manager/list |  |
 | 부분 예약 내역 조회(호텔 이름 검색) | /manager/list |  | GET |  | manager/list |  |
+
+<h1>최종 SQL</h1>
+```sql
+DROP TABLE RESERVATION;
+DROP TABLE HOTEL;
+DROP TABLE CUSTOMER;
+
+CREATE SEQUENCE customer_seq
+START WITH 1
+INCREMENT BY 1
+NOCACHE;
+
+CREATE TABLE customer (
+    customer_id NUMBER(10) DEFAULT customer_seq.NEXTVAL PRIMARY KEY,
+    customer_name VARCHAR2(260) NOT NULL,
+    password VARCHAR2(260) NOT NULL,
+    birth DATE NOT NULL,
+    phone_number VARCHAR2(260) NOT NULL,
+    email VARCHAR2(260) NOT NULL,
+    CONSTRAINT unique_phone_number UNIQUE (phone_number),
+    CONSTRAINT unique_email UNIQUE (email)
+);
+
+CREATE TABLE hotel (
+    hotel_id NUMBER(10) PRIMARY KEY,
+    hotel_name VARCHAR2(260) NOT NULL,
+    address VARCHAR2(260) NOT NULL,
+    hotel_number VARCHAR2(260) NOT NULL,
+    price NUMBER(8) NOT NULL,
+    rating NUMBER(2,1),
+    hotel_image BLOB,
+    CONSTRAINT unique_hotel_number UNIQUE (hotel_number)
+);
+
+INSERT INTO hotel VALUES (1, 'Grand Hyatt Seoul', '서울특별시 용산구 소월로 322', '02-001-001', 544500, 3.8, NULL);
+INSERT INTO hotel VALUES (2, 'Josun Palace', '서울특별시 강남구 테헤란로 231', '02-002-002', 550000, 4.6, NULL);
+
+CREATE SEQUENCE reservation_seq
+START WITH 1
+INCREMENT BY 1
+NOCACHE;
+
+CREATE TABLE reservation (
+    reserve_id NUMBER(10) DEFAULT reservation_seq.NEXTVAL PRIMARY KEY,
+    customer_id NUMBER(10) NOT NULL,
+    hotel_id NUMBER(10) NOT NULL,
+    reserve_date Timestamp DEFAULT SYSTIMESTAMP NOT NULL,
+    checkin_date Date NOT NULL,
+    checkout_date Date NOT NULL,
+    room_number NUMBER(2) NOT NULL,
+    people_number NUMBER(2) NOT NULL,
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
+    FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id)
+);
+
+SELECT * FROM CUSTOMER;
+SELECT * FROM RESERVATION;
+SELECT * FROM HOTEL;
+```
